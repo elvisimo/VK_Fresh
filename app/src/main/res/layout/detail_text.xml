@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/detailLayout"
+    android:orientation="vertical">
 
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:id="@+id/detailTextView"
-    android:layout_gravity="center_horizontal"
-    android:background="@color/primary_material_light"
-    android:autoText="false"
-    android:textStyle="normal|italic"
-    android:typeface="sans"
-    android:textSize="@dimen/abc_text_size_small_material">
-</TextView>
+    <ImageView
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/detailIvView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ImageView>
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/detailTextView"
+        android:layout_gravity="center_horizontal"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:textStyle="normal"
+        android:fontFamily="@string/abc_searchview_description_submit"
+        android:typeface="sans"
+        ></TextView>
+</LinearLayout></ScrollView>

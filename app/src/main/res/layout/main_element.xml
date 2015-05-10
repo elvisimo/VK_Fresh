@@ -2,11 +2,14 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:divider="#b2ebf2"
+    android:orientation="vertical">
     <ImageView
+        android:layout_gravity="center_horizontal"
         android:id="@+id/ivImg"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ImageView>
 <TextView
@@ -16,11 +19,10 @@
     android:id="@+id/itemTextView"
     android:layout_gravity="center_horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/accent_material_light"
-    android:autoText="false"
-    android:textStyle="normal|italic"
+    android:textSize="@dimen/abc_text_size_medium_material"
+    android:textStyle="normal"
+    android:fontFamily="@string/abc_searchview_description_submit"
     android:typeface="sans"
-    android:textSize="@dimen/abc_text_size_small_material"
     android:maxLines="8">
 </TextView>
 </LinearLayout>

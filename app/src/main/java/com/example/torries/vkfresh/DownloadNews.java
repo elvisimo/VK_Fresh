@@ -1,10 +1,19 @@
 package com.example.torries.vkfresh;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
+import android.text.Layout;
 import android.text.Spannable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,14 +24,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by torries on 19.04.15.
  */
-public class DownloadNews extends AsyncTask<Integer,Void,List<Spannable>> {
+public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<String,Object>>> {
     final String BASE_URL = "https://api.vk.com/method/";
     final String METHOD_NAME = "wall.get?";
     final String URL_TO_GET = BASE_URL + METHOD_NAME;
@@ -30,36 +41,67 @@ public class DownloadNews extends AsyncTask<Integer,Void,List<Spannable>> {
     final String COUNT = "count";
     final String OFFSET = "offset";
     final String API_VERSION = "api_version";
+    final String PATH="path";
+    final String TEXT="text";
+    final String IMAGE="img";
+    private Context mContext;
+    ArrayList<HashMap<String,Object>> vknews= new ArrayList<>();
+
     URL url;
     HttpURLConnection urlConnection = null;
     BufferedReader bufferedReader;
 
-    static List<Spannable> updateView(int totalCount){
+
+
+    static ArrayList<HashMap<String,Object>> updateView(int totalCount){
         DownloadNews downloadNews = new DownloadNews();
         downloadNews.execute(totalCount);
      return null;
     }
     //https://api.vk.com/method/wall.get?owner_id=-225666&count=10&version=5.30
-    private List<Spannable> getNewsFromJson(String vknewsJson) throws JSONException {
-
+    private ArrayList<HashMap<String,Object>> getNewsFromJson(String vknewsJson) throws JSONException {
+        DownloadPicture downloadPicture = new DownloadPicture();
         JSONObject jsonObject = new JSONObject(vknewsJson);
+        Log.v("WTF",vknewsJson);
         JSONArray jsonArray = jsonObject.getJSONArray("response");
-        List<Spannable> spannableArray = new ArrayList<>();
-        for (int i = 1; i < jsonArray.length(); i++){
 
+        Log.v("Before cycle",jsonArray.toString());
+        for (int i = 1; i < jsonArray.length(); i++){
+            HashMap<String,Object> myHash= new HashMap<>();
             JSONObject object = (JSONObject) jsonArray.get(i);
             if (!object.get("text").equals("")){
-                spannableArray.add((Spannable) Html.fromHtml((String) object.get("text")));}
+                myHash.put(TEXT,(Spannable) Html.fromHtml((String) object.get("text")));
+                JSONObject objectAttach = object.getJSONObject("attachment");
+                if (objectAttach.optJSONObject("photo")!=null){
+                JSONObject objectImg = objectAttach.getJSONObject("photo");
+                    Uri urri;
+                if (objectImg.opt("src_xxbig")!=null){
+                    urri = Uri.parse(objectImg.get("src_xxbig").toString());
+                }else{
+                urri = Uri.parse(objectImg.get("src_xbig").toString());}
+                Log.v("WTF",urri.toString());
+                myHash.put(PATH,urri);
 
+                    Bitmap myBitmap = downloadPicture.doInBackground(urri);
+                    myHash.put(IMAGE,myBitmap);
+                 }
+                else myHash.put(IMAGE,null);
+                vknews.add(myHash);
+
+                }
             else continue;
+            }
+
+        return null;
         }
-        return spannableArray;
-    }
+
+
 
     @Override
-    protected List<Spannable> doInBackground(Integer... params) {
+    protected ArrayList<HashMap<String,Object>> doInBackground(Integer... params) {
         String vknewsJson = null;
-        List<Spannable> vknews= new ArrayList<>();
+
+
         Uri uri = Uri.parse(URL_TO_GET).buildUpon()
              .appendQueryParameter(OWNER_ID, "-225666")
              .appendQueryParameter(COUNT, "10")
@@ -92,19 +134,20 @@ public class DownloadNews extends AsyncTask<Integer,Void,List<Spannable>> {
             }
         }
         try {
-            vknews = getNewsFromJson(vknewsJson);
+            getNewsFromJson(vknewsJson);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return vknews;
+        return null;
     }
 
     @Override
-    protected void onPostExecute(List<Spannable> strings) {
+    protected void onPostExecute(ArrayList<HashMap<String,Object>> strings) {
         super.onPostExecute(strings);
-        Log.d("FINAL ARRAY",strings.toString());
-        for (Spannable x :strings) {
-            MainActivity.newsAdapter.add(x);
-        }
+        MainActivity.dataArray.addAll(vknews);
+        MainActivity.newsAdapter.notifyDataSetChanged();
+
     }
+
+
 }

@@ -1,69 +1,104 @@
 package com.example.torries.vkfresh;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Spannable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import java.lang.reflect.Array;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    static ArrayAdapter newsAdapter;
+    static SimpleAdapter newsAdapter;
     int state =10;
-
+    static ArrayList<HashMap<String,Object>> dataArray = new ArrayList<>();
+    static ListView mainListView;
+    final String TEXT="text";
+    final String IMAGE="img";
+    final String PATH="path";
+    private boolean userScrolled;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ListView mainListView = (ListView) findViewById(R.id.mainListView);
-        newsAdapter = new ArrayAdapter(this, R.layout.main_element, R.id.itemTextView);
-        mainListView.setAdapter(newsAdapter);
+        mainListView = (ListView) findViewById(R.id.mainListView);
+        final String TEXT="text";
+        final String IMAGE="img";
+        Log.v("WTF", "wtf");
+        DownloadNews downloadNews = new DownloadNews();
+        downloadNews.execute(0);
+        newsAdapter = new SimpleAdapter(this, MainActivity.dataArray, R.layout.main_element, new String[]{TEXT, IMAGE} , new int[]{R.id.itemTextView,R.id.ivImg});
+        newsAdapter.setViewBinder(new SimpleAdapter.ViewBinder() {
+            @Override
+            public boolean setViewValue(View view, Object data, String textRepresentation) {
+                if ((view instanceof ImageView) & (data instanceof Bitmap)) {
+                    ImageView iv = (ImageView) view;
+                    Bitmap bm = (Bitmap) data;
+                    iv.setImageBitmap(bm);
+
+                    return true;
+                }
+                return false;
+
+            }
+        });
+        mainListView.setAdapter(MainActivity.newsAdapter);
+
 
         mainListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if(scrollState == 0){
-                    DownloadNews.updateView(state);
-                    state+=10;
-                }
+
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-              //  if (/*(totalItemCount - firstVisibleItem) < 5*/firstVisibleItem == 5  ){
-                //    DownloadNews.updateView(totalItemCount);
-               // }
+                if(visibleItemCount > 0 && firstVisibleItem + visibleItemCount == totalItemCount){
+                    DownloadNews.updateView(state);
+                    state+=10;
+                }
             }
         });
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Spannable text = (Spannable) newsAdapter.getItem(position);
+                HashMap<String,Object> hashMap = (HashMap<String,Object>) newsAdapter.getItem(position);
                 Intent detailsIntent = new Intent(getApplicationContext(),DetailActivity.class);
-                detailsIntent.putExtra(Intent.EXTRA_TEXT,text.toString());
+                detailsIntent.putExtra(Intent.EXTRA_TEXT, hashMap.get(TEXT).toString());
+                detailsIntent.setData((android.net.Uri) hashMap.get(PATH));
                 startActivity(detailsIntent);
             }
         });
     }
 
 
+
+
     @Override
     protected void onStart() {
         super.onStart();
-        DownloadNews downloadNews = new DownloadNews();
-
-
-        downloadNews.execute(0);
-
 
     }
 
