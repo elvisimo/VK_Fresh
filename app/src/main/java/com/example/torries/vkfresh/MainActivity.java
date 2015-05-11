@@ -2,6 +2,7 @@ package com.example.torries.vkfresh;
 
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,6 +40,7 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -72,6 +74,18 @@ public class MainActivity extends ActionBarActivity {
                         new SectionDrawerItem().withName(R.string.drawer_item_settings)
                 )
                 .build();
+        new Drawer.OnDrawerItemClickListener() {
+
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                if (iDrawerItem.equals(R.string.drawer_item_favorite)){
+                    Intent intent = new Intent(getApplicationContext(),FavoriteActivity.class);
+                    startActivity(intent);
+                }
+            }
+        };
+        
         screenHeightDp = this.getResources().getConfiguration().screenHeightDp;
         screenWidthDp = this.getResources().getConfiguration().screenWidthDp;
         mainListView = (ListView) findViewById(R.id.mainListView);
