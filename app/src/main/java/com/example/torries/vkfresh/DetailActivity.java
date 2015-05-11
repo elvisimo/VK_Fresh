@@ -1,27 +1,27 @@
 package com.example.torries.vkfresh;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.mikepenz.iconics.typeface.FontAwesome;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
 
@@ -33,14 +33,28 @@ public class DetailActivity extends ActionBarActivity {
     static Uri bmUri;
     private Bitmap bm;
     DialogFragment df;
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Intent intent = this.getIntent();
         df = new DialogSave();
         setContentView(R.layout.detail_text);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_detail);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        new Drawer()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withActionBarDrawerToggle(true)
+                .withHeader(R.layout.drawer_header)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
 
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_favorite).withIcon(FontAwesome.Icon.faw_star).withIdentifier(2),
+                        new SectionDrawerItem().withName(R.string.drawer_item_settings)
+                )
+                .build();
         //if (intent.hasExtra(Intent.EXTRA_TEXT) && intent.hasExtra("BITMAP_IMAGE")){
         newsText = intent.getStringExtra(Intent.EXTRA_TEXT);
         if (intent.getData()!=null){
@@ -60,7 +74,7 @@ public class DetailActivity extends ActionBarActivity {
         TextView textView = (TextView)findViewById(R.id.detailTextView);
         textView.setText(newsText);
         com.example.torries.vkfresh.FloatingActionButton fabButton = new com.example.torries.vkfresh.FloatingActionButton.Builder(this)
-                .withDrawable(getDrawable(R.drawable.ic_add2))
+                .withDrawable(getResources().getDrawable(R.drawable.ic_add2))
                 .withButtonColor(Color.WHITE)
                 .withGravity(Gravity.BOTTOM | Gravity.RIGHT)
                 .withButtonSize(90)

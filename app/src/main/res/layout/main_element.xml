@@ -24,6 +24,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:textSize="@dimen/abc_text_size_medium_material"
     android:textStyle="normal"
+    android:textColor="@color/material_blue_grey_800"
     android:fontFamily="@string/abc_searchview_description_submit"
     android:typeface="sans"
     android:maxLines="8">

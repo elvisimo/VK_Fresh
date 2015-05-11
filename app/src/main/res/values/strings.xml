@@ -8,4 +8,7 @@
     <string name="edit_text_label">Enter label here</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="drawer_item_home">Home</string>
+    <string name="drawer_item_settings">Settings</string>
+    <string name="drawer_item_favorite">Favorite</string>
 </resources>
