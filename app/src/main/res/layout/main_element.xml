@@ -10,7 +10,10 @@
         android:layout_gravity="center_horizontal"
         android:id="@+id/ivImg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:minHeight="0dp">
     </ImageView>
 <TextView
     android:layout_width="match_parent"

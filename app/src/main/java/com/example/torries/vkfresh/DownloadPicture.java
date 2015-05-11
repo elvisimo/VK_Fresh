@@ -2,9 +2,11 @@ package com.example.torries.vkfresh;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.IOException;
@@ -27,17 +29,30 @@ public class DownloadPicture extends AsyncTask<Uri,Void,Bitmap>{
                 imgUrl = new URL(params[0].toString());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-            }try{
-            HttpURLConnection connection = (HttpURLConnection) imgUrl.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            input = connection.getInputStream();}catch (IOException io) {
-            io.printStackTrace();
+                Log.v("Download Picture","params[0] == null");
+            }
+            try {
+                HttpURLConnection connection = (HttpURLConnection) imgUrl.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                input = connection.getInputStream();
+            } catch (IOException io) {
+                io.printStackTrace();
+
+                return null;
+
+            }
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+        try {
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
+        return myBitmap;
+
+
         }
 
     @Override
@@ -46,6 +61,30 @@ public class DownloadPicture extends AsyncTask<Uri,Void,Bitmap>{
 
     }
 
+    public static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
 
+        int width = bm.getWidth();
+
+        int height = bm.getHeight();
+
+        float scaleWidth = ((float) newWidth) / width;
+
+        float scaleHeight = ((float) newHeight) / height;
+
+// CREATE A MATRIX FOR THE MANIPULATION
+
+        Matrix matrix = new Matrix();
+
+// RESIZE THE BIT MAP
+
+        matrix.postScale(scaleWidth, scaleHeight);
+
+// RECREATE THE NEW BITMAP
+
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+
+        return resizedBitmap;
+
+    }
 }
 

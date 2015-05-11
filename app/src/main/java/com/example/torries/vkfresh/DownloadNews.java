@@ -81,11 +81,13 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
                 urri = Uri.parse(objectImg.get("src_xbig").toString());}
                 Log.v("WTF",urri.toString());
                 myHash.put(PATH,urri);
-
                     Bitmap myBitmap = downloadPicture.doInBackground(urri);
                     myHash.put(IMAGE,myBitmap);
                  }
-                else myHash.put(IMAGE,null);
+                else {
+                    myHash.put(IMAGE,null);
+                    Log.v("Empty image",myHash.toString());
+                }
                 vknews.add(myHash);
 
                 }
@@ -131,6 +133,7 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
                 bufferedReader.close();
             } catch (IOException e) {
                 e.printStackTrace();
+
             }
         }
         try {

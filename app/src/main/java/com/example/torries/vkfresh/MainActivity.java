@@ -1,12 +1,15 @@
 package com.example.torries.vkfresh;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Spannable;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,27 +42,44 @@ public class MainActivity extends ActionBarActivity {
     final String TEXT="text";
     final String IMAGE="img";
     final String PATH="path";
-    private boolean userScrolled;
+    static int screenHeightDp;
+    static int screenWidthDp;
+    static String DIR;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        screenHeightDp = this.getResources().getConfiguration().screenHeightDp;
+        screenWidthDp = this.getResources().getConfiguration().screenWidthDp;
         mainListView = (ListView) findViewById(R.id.mainListView);
         final String TEXT="text";
         final String IMAGE="img";
+
+             DIR= getFilesDir().toString();
         Log.v("WTF", "wtf");
         DownloadNews downloadNews = new DownloadNews();
-        downloadNews.execute(0);
+        if (dataArray.isEmpty()){
+        downloadNews.execute(0);}
         newsAdapter = new SimpleAdapter(this, MainActivity.dataArray, R.layout.main_element, new String[]{TEXT, IMAGE} , new int[]{R.id.itemTextView,R.id.ivImg});
         newsAdapter.setViewBinder(new SimpleAdapter.ViewBinder() {
             @Override
             public boolean setViewValue(View view, Object data, String textRepresentation) {
+
                 if ((view instanceof ImageView) & (data instanceof Bitmap)) {
                     ImageView iv = (ImageView) view;
+                    if (data != null){
                     Bitmap bm = (Bitmap) data;
-                    iv.setImageBitmap(bm);
-
+                    Log.v("Data is not null","wtf");
+                    iv.setImageBitmap(bm);}
+                    else {
+                        iv.setImageBitmap(null);
+                    }
                     return true;
+                }
+                else if ((view instanceof ImageView) & (data == null)){
+                    ImageView iv = (ImageView) view;
+                    iv.setImageBitmap(null);
                 }
                 return false;
 
