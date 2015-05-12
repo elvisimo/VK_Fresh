@@ -61,6 +61,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         new Drawer()
                 .withActivity(this)
@@ -73,19 +74,23 @@ public class MainActivity extends ActionBarActivity {
                         new PrimaryDrawerItem().withName(R.string.drawer_item_favorite).withIcon(FontAwesome.Icon.faw_star).withIdentifier(2),
                         new SectionDrawerItem().withName(R.string.drawer_item_settings)
                 )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                        Log.v("IDreawerItem",iDrawerItem.toString());
+                        if (iDrawerItem.getIdentifier()==2){
+                            Intent intent = new Intent(getApplicationContext(),FavoriteActivity.class);
+                            startActivity(intent);
+                        }
+
+                    }
+                })
                 .build();
-        new Drawer.OnDrawerItemClickListener() {
 
 
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-                if (iDrawerItem.equals(R.string.drawer_item_favorite)){
-                    Intent intent = new Intent(getApplicationContext(),FavoriteActivity.class);
-                    startActivity(intent);
-                }
-            }
-        };
-        
+
+
+
         screenHeightDp = this.getResources().getConfiguration().screenHeightDp;
         screenWidthDp = this.getResources().getConfiguration().screenWidthDp;
         mainListView = (ListView) findViewById(R.id.mainListView);

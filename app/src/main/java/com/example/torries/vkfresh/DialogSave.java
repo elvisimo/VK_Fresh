@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -42,7 +47,7 @@ public class DialogSave extends DialogFragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.buttonOk){
+        if (v.getId() == R.id.buttonOk) {
             FileOutputStream out = null;
             ContentValues cv = new ContentValues();
             EditText editText = (EditText) getDialog().findViewById(R.id.editTextLabel);
@@ -51,30 +56,35 @@ public class DialogSave extends DialogFragment implements View.OnClickListener {
             Uri image_uri = DetailActivity.bmUri;
             DBHelper dbHelper = new DBHelper(v.getContext());
             DownloadPicture downloadPicture = new DownloadPicture();
-
             Bitmap bm = null;
-            String filename = "file"+ Calendar.DATE + Calendar.DAY_OF_WEEK +Calendar.SECOND + Calendar.MILLISECOND +".png";
+            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+            String filename = "MI_" + timeStamp + ".jpg";
             try {
                 bm = downloadPicture.execute(image_uri).get();
                 out = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-                bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+                bm.compress(Bitmap.CompressFormat.PNG, 80, out);
                 out.close();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            cv.put("label", label);
-            cv.put("text", text);
-            cv.put("image_name", filename);
-            db.insert("mytable", null, cv);
-            //проверка, что в бд данные сохраняются корректно
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                cv.put("label", label);
+                cv.put("text", text);
+                Log.v("When saving into db",label+text);
+                Log.v("image_name while saving", getActivity().getFilesDir() + "/" + filename);
+                cv.put("image_name", (getActivity().getFilesDir() + "/" + filename));
+                db.insert("favoritetable", null, cv);
+                //проверка, что в бд данные сохраняются корректно
             /*Log.d("DBTEST", "--- Rows in mytable: ---");
             // делаем запрос всех данных из таблицы mytable, получаем Cursor
             Cursor c = db.query("mytable", null, null, null, null, null, null);
@@ -102,13 +112,14 @@ public class DialogSave extends DialogFragment implements View.OnClickListener {
             } else
                 Log.d("DBTEST", "0 rows");
             c.close();*/
-            dbHelper.close();
-            dismiss();
-            Log.v("filename",filename);
-        }
-        if (v.getId() == R.id.buttonCancel){
+                dbHelper.close();
+                dismiss();
 
-            dismiss();
+            }
+            if (v.getId() == R.id.buttonCancel) {
+
+                dismiss();
+            }
         }
     }
-}
+

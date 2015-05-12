@@ -2,6 +2,8 @@ package com.example.torries.vkfresh;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -22,6 +24,7 @@ public class DBGetData extends AsyncTask<Void,Void,Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
+        Log.v("DBGetData", "started");
         DBHelper dbHelper = new DBHelper(mContext);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.query("mytable", null, null, null, null, null, null);
@@ -31,12 +34,15 @@ public class DBGetData extends AsyncTask<Void,Void,Void> {
         if (c.moveToFirst()) {
 
             // определяем номера столбцов по имени в выборке
+            int labelColIndex= 0;
+            int textColIndex = 0;
+            int imageColIndex = 0;
 
-            int labelColIndex = c.getColumnIndex("label");
-            int textColIndex = c.getColumnIndex("text");
-            int imageColIndex = c.getColumnIndex("image_name");
 
             do {
+                labelColIndex = c.getColumnIndex("label");
+                textColIndex = c.getColumnIndex("text");
+                imageColIndex = c.getColumnIndex("image_name");
                 // получаем значения по номерам столбцов и пишем все в лог
                 /*Log.d("DBTEST",
                         "ID = " + c.getInt(idColIndex) +
@@ -47,22 +53,25 @@ public class DBGetData extends AsyncTask<Void,Void,Void> {
                 // переход на следующую строку
                 // а если следующей нет (текущая - последняя), то false - выходим из цикла
                 File image = mContext.getFileStreamPath(c.getString(imageColIndex));
+                //Bitmap bm = BitmapFactory.decodeFile(image.getAbsolutePath());
                 hash.put("label",c.getString(labelColIndex));
-                hash.put("image_name",image);
+                hash.put("image_name",image.getAbsolutePath());
                 hash.put("text",c.getString(textColIndex));
+                Log.v("Hash",hash.toString());
                 FavoriteActivity.favoriteArray.add(hash);
-
+                hash.clear();
             } while (c.moveToNext());
         } else
             Log.d("DBTEST", "0 rows");
-        FavoriteActivity.favAdapter.notifyDataSetChanged();
+
         c.close();
+        Log.v("DBGetData","Finished");
         return null;
     }
 
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        FavoriteActivity.favAdapter.notifyDataSetChanged();
     }
 }

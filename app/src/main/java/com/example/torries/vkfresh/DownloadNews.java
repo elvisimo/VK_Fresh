@@ -77,16 +77,18 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
                     Uri urri;
                 if (objectImg.opt("src_xxbig")!=null){
                     urri = Uri.parse(objectImg.get("src_xxbig").toString());
-                }else{
-                urri = Uri.parse(objectImg.get("src_xbig").toString());}
-                Log.v("WTF",urri.toString());
-                myHash.put(PATH,urri);
+                }else if (objectImg.opt("src_xxbig") != null) {
+
+                        urri = Uri.parse(objectImg.get("src_xbig").toString());
+                    }
+                    else urri = Uri.parse(objectImg.get("src_big").toString());
+                    Log.v("WTF", urri.toString());
+                    myHash.put(PATH, urri);
                     Bitmap myBitmap = downloadPicture.doInBackground(urri);
-                    myHash.put(IMAGE,myBitmap);
-                 }
-                else {
-                    myHash.put(IMAGE,null);
-                    Log.v("Empty image",myHash.toString());
+                    myHash.put(IMAGE, myBitmap);
+                } else {
+                    myHash.put(IMAGE, null);
+                    Log.v("Empty image", myHash.toString());
                 }
                 vknews.add(myHash);
 
