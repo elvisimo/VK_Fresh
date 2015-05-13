@@ -2,12 +2,9 @@ package com.example.torries.vkfresh;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,8 +40,9 @@ public class DownloadPicture extends AsyncTask<Uri,Void,Bitmap>{
 
             }
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            options.inSampleSize = calculateInSampleSize(options,MainActivity.screenWidthDp,MainActivity.screenHeightDp);
+            Bitmap myBitmap = BitmapFactory.decodeStream(input,null, options);
+           // myBitmap = getResizedBitmap(myBitmap,MainActivity.screenHeightDp/2,MainActivity.screenWidthDp);
         try {
             input.close();
         } catch (IOException e) {
@@ -61,7 +59,7 @@ public class DownloadPicture extends AsyncTask<Uri,Void,Bitmap>{
 
     }
 
-    public static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+   /* public static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
 
         int width = bm.getWidth();
 
@@ -85,6 +83,21 @@ public class DownloadPicture extends AsyncTask<Uri,Void,Bitmap>{
 
         return resizedBitmap;
 
-    }
+    }*/
+   public static int calculateInSampleSize(
+           BitmapFactory.Options options, int reqWidth, int reqHeight) {
+       final int height = options.outHeight;
+       final int width = options.outWidth;
+       int inSampleSize = 1;
+
+       if (height > reqHeight || width > reqWidth) {
+           if (width > height) {
+               inSampleSize = Math.round((float)height / (float)reqHeight);
+           } else {
+               inSampleSize = Math.round((float)width / (float)reqWidth);
+           }
+       }
+       return inSampleSize;
+   }
 }
 

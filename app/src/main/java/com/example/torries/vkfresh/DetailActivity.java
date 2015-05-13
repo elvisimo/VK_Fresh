@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -19,9 +17,7 @@ import android.widget.TextView;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
@@ -34,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 public class DetailActivity extends ActionBarActivity {
     static String newsText;
     static Uri bmUri;
-    private Bitmap bm;
     DialogFragment df;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,17 +86,16 @@ public class DetailActivity extends ActionBarActivity {
         TextView textView = (TextView)findViewById(R.id.detailTextView);
         textView.setText(newsText);
         com.example.torries.vkfresh.FloatingActionButton fabButton = new com.example.torries.vkfresh.FloatingActionButton.Builder(this)
-                .withDrawable(getResources().getDrawable(R.drawable.ic_add2))
+                .withDrawable(getResources().getDrawable(R.drawable.button))
                 .withButtonColor(Color.WHITE)
                 .withGravity(Gravity.BOTTOM | Gravity.RIGHT)
-                .withButtonSize(90)
+                .withButtonSize(70)
                 .withMargins(0, 0, 16, 16)
                 .create();
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-              df.show(getFragmentManager(), "get dialog");
+                df.show(getFragmentManager(), "get dialog");
 
             }
         });

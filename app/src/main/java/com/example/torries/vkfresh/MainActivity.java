@@ -1,44 +1,26 @@
 package com.example.torries.vkfresh;
 
-import android.app.DialogFragment;
-import android.content.Context;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
@@ -48,12 +30,14 @@ public class MainActivity extends ActionBarActivity {
     int state =10;
     static ArrayList<HashMap<String,Object>> dataArray = new ArrayList<>();
     static ListView mainListView;
-    final String TEXT="text";
-    final String IMAGE="img";
+    static int groupId = -225666;
     final String PATH="path";
     static int screenHeightDp;
     static int screenWidthDp;
     static String DIR;
+    private DownloadNews downloadNews;
+    private DownloadNews updateNews;
+    static boolean isLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +83,9 @@ public class MainActivity extends ActionBarActivity {
 
              DIR= getFilesDir().toString();
         Log.v("WTF", "wtf");
-        DownloadNews downloadNews = new DownloadNews();
+        downloadNews = new DownloadNews();
         if (dataArray.isEmpty()){
-        downloadNews.execute(0);}
+        downloadNews.execute(0,groupId);}
         newsAdapter = new SimpleAdapter(this, MainActivity.dataArray, R.layout.main_element, new String[]{TEXT, IMAGE} , new int[]{R.id.itemTextView,R.id.ivImg});
         newsAdapter.setViewBinder(new SimpleAdapter.ViewBinder() {
             @Override
@@ -109,13 +93,11 @@ public class MainActivity extends ActionBarActivity {
 
                 if ((view instanceof ImageView) & (data instanceof Bitmap)) {
                     ImageView iv = (ImageView) view;
-                    if (data != null){
+
                     Bitmap bm = (Bitmap) data;
                     Log.v("Data is not null","wtf");
-                    iv.setImageBitmap(bm);}
-                    else {
-                        iv.setImageBitmap(null);
-                    }
+                    iv.setImageBitmap(bm);
+
                     return true;
                 }
                 else if ((view instanceof ImageView) & (data == null)){
@@ -137,9 +119,13 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(visibleItemCount > 0 && firstVisibleItem + visibleItemCount == totalItemCount){
-                    DownloadNews.updateView(state);
-                    state+=10;
+                if((!isLoading) && ((firstVisibleItem + visibleItemCount +3) == totalItemCount)){
+
+                        updateNews = new DownloadNews();
+                        updateNews.execute(state,groupId);
+                        state+=10;
+
+
                 }
             }
         });
@@ -151,6 +137,15 @@ public class MainActivity extends ActionBarActivity {
                 detailsIntent.putExtra(Intent.EXTRA_TEXT, hashMap.get(TEXT).toString());
                 detailsIntent.setData((android.net.Uri) hashMap.get(PATH));
                 startActivity(detailsIntent);
+            }
+        });
+        mainListView.setRecyclerListener(new AbsListView.RecyclerListener() {
+            @Override
+            public void onMovedToScrapHeap(View view) {
+                Log.v("Image deleted","WOHOO");
+                ImageView imageView = (ImageView) view.findViewById(R.id.ivImg);
+
+                imageView.setImageBitmap(null);
             }
         });
     }

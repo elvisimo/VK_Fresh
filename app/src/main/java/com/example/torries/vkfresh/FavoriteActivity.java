@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -24,9 +23,6 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.File;
-import java.sql.Blob;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import static com.example.torries.vkfresh.R.id.favIvImg;
 
@@ -37,8 +33,6 @@ public class FavoriteActivity extends ActionBarActivity {
     final String TEXT = "text";
     final String IMAGE = "image_name";
     final String LABEL= "label";
-    static SimpleAdapter favAdapter;
-    static ArrayList<HashMap<String,Object>> favoriteArray = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

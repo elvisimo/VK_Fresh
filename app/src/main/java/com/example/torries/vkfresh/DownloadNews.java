@@ -1,19 +1,11 @@
 package com.example.torries.vkfresh;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
-import android.text.Layout;
 import android.text.Spannable;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,11 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by torries on 19.04.15.
@@ -44,7 +34,6 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
     final String PATH="path";
     final String TEXT="text";
     final String IMAGE="img";
-    private Context mContext;
     ArrayList<HashMap<String,Object>> vknews= new ArrayList<>();
 
     URL url;
@@ -53,11 +42,7 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
 
 
 
-    static ArrayList<HashMap<String,Object>> updateView(int totalCount){
-        DownloadNews downloadNews = new DownloadNews();
-        downloadNews.execute(totalCount);
-     return null;
-    }
+
     //https://api.vk.com/method/wall.get?owner_id=-225666&count=10&version=5.30
     private ArrayList<HashMap<String,Object>> getNewsFromJson(String vknewsJson) throws JSONException {
         DownloadPicture downloadPicture = new DownloadPicture();
@@ -93,7 +78,6 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
                 vknews.add(myHash);
 
                 }
-            else continue;
             }
 
         return null;
@@ -104,10 +88,10 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
     @Override
     protected ArrayList<HashMap<String,Object>> doInBackground(Integer... params) {
         String vknewsJson = null;
-
+        MainActivity.isLoading = true;
 
         Uri uri = Uri.parse(URL_TO_GET).buildUpon()
-             .appendQueryParameter(OWNER_ID, "-225666")
+             .appendQueryParameter(OWNER_ID, params[1].toString())
              .appendQueryParameter(COUNT, "10")
              .appendQueryParameter(OFFSET,params[0].toString())
              .appendQueryParameter(API_VERSION, "5.30").build();
@@ -150,6 +134,7 @@ public class DownloadNews extends AsyncTask<Integer,Void,ArrayList<HashMap<Strin
     protected void onPostExecute(ArrayList<HashMap<String,Object>> strings) {
         super.onPostExecute(strings);
         MainActivity.dataArray.addAll(vknews);
+        MainActivity.isLoading=false;
         MainActivity.newsAdapter.notifyDataSetChanged();
 
     }

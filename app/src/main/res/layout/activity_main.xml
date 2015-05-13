@@ -3,6 +3,7 @@
     android:layout_height="match_parent"  tools:context=".MainActivity"
     android:orientation="vertical"
 
+    android:paddingBottom="@dimen/abc_action_bar_default_padding_material"
     >
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -21,8 +22,8 @@
         android:layout_weight="1"
         android:footerDividersEnabled="false"
         android:headerDividersEnabled="false"
-        android:dividerHeight="15dp"
-        android:divider="#B6B6B6"
+        android:dividerHeight="3dp"
+        android:divider="?attr/colorPrimary"
         android:background="#FFFFFF"></ListView>
 
 
